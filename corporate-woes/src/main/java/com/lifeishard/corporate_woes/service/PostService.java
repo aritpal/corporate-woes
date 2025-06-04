@@ -41,6 +41,13 @@ public class PostService {
         return mapToPostResponseDTO(post);
     }
 
+    @Transactional
+    public PostResponseDTO upvotePost(Long id) { //
+        Post post = postRepository.findById(id).orElseThrow(() -> new RuntimeException("Post not found")); //
+        post.setUpvotes(post.getUpvotes() + 1); //
+        return mapToPostResponseDTO(postRepository.save(post)); //
+    }
+
     private PostResponseDTO mapToPostResponseDTO(Post post) {
         PostResponseDTO dto = new PostResponseDTO();
         dto.setId(post.getId());
