@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PostList from '../components/PostList';
-import CreatePostForm from '../components/CreatePostForm'; //
+import CreatePostForm from '../components/CreatePostForm';
 
 const API_URL = 'http://localhost:8080/api/v1/posts';
 
@@ -23,8 +23,20 @@ const HomePage = () => {
       });
   }, []);
 
-  const handlePostCreated = (newPost) => { //
-    setPosts(prevPosts => [newPost, ...prevPosts]); //
+  const handlePostCreated = (newPost) => {
+    setPosts(prevPosts => [newPost, ...prevPosts]);
+  };
+
+  const handlePostUpdated = (updatedPost) => {
+    console.log('HomePage: handlePostUpdated called with:', updatedPost);
+    setPosts(prevPosts => {
+      console.log('HomePage: Previous posts state:', prevPosts);
+      const newPosts = prevPosts.map(p =>
+        p.id === updatedPost.id ? updatedPost : p
+      );
+      console.log('HomePage: New posts state after map:', newPosts);
+      return newPosts;
+    });
   };
 
   if (loading) return <p>Loading...</p>;
@@ -32,9 +44,9 @@ const HomePage = () => {
 
   return (
     <div>
-      <CreatePostForm onPostCreated={handlePostCreated} /> //
+      <CreatePostForm onPostCreated={handlePostCreated} />
       {error && <p className="text-red-500 text-sm mb-3">Error fetching new posts, but showing cached ones: {error}</p>}
-      <PostList posts={posts} />
+      <PostList posts={posts} onPostUpdated={handlePostUpdated} />
     </div>
   );
 };

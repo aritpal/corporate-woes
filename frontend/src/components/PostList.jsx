@@ -1,11 +1,11 @@
 import React from 'react';
 import PostCard from './PostCard';
 
-const PostList = ({ posts }) => {
+const PostList = ({ posts, onPostUpdated }) => {
   return (
     <div>
-      {posts.map(post => (
-        <PostCard key={post.id} post={post} />
+      {posts && posts.map(post => (
+        <PostCard key={post.id} post={post} onPostUpdated={onPostUpdated} />
       ))}
     </div>
   );
