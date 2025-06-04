@@ -3,6 +3,7 @@ package com.lifeishard.corporate_woes.controller;
 import com.lifeishard.corporate_woes.dto.PostRequestDTO;
 import com.lifeishard.corporate_woes.dto.PostResponseDTO;
 import com.lifeishard.corporate_woes.service.PostService;
+import jakarta.validation.Valid; //
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,17 +13,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/posts")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "http://localhost:3000")
 public class PostController {
 
     @Autowired
     private PostService postService;
 
     @PostMapping
-    public ResponseEntity<PostResponseDTO> createPost(@RequestBody PostRequestDTO req) {
-        if (req.getContent() == null || req.getContent().trim().isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<PostResponseDTO> createPost(@Valid @RequestBody PostRequestDTO req) { //
         PostResponseDTO createdPost = postService.createPost(req);
         return new ResponseEntity<>(createdPost, HttpStatus.CREATED);
     }
