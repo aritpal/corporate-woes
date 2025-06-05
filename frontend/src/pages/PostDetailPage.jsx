@@ -13,9 +13,9 @@ const PostDetailPage = () => {
   const [comments, setComments] = useState([]);
   const [loadingPost, setLoadingPost] = useState(true);
   const [loadingComments, setLoadingComments] = useState(true);
-  const [error, setError] = useState(null); // Consolidated error state
+  const [error, setError] = useState(null);
 
-  const fetchComments = useCallback(async () => {
+  const fetchCommentsCallback = useCallback(async () => {
     if (!postId) return;
     setLoadingComments(true);
     try {
@@ -23,32 +23,40 @@ const PostDetailPage = () => {
       setComments(response.data);
     } catch (err) {
       console.error("Error fetching comments:", err);
-      setError(prevError => prevError || "Failed to fetch comments."); // Keep existing post error if any
+      let errorMessage = "Failed to fetch comments.";
+      if (err.response && err.response.data && err.response.data.message) {
+          errorMessage = err.response.data.message;
+      }
+      setError(prevError => prevError ? `${prevError} ${errorMessage}` : errorMessage);
     } finally {
       setLoadingComments(false);
     }
-  }, [postId]); // Removed 'error' from here to avoid loop if error is set by fetchPost
+  }, [postId]);
 
   useEffect(() => {
     const fetchPost = async () => {
       if (!postId) return;
       setLoadingPost(true);
-      setError(null); // Reset error before fetching post
+      setError(null);
       try {
         const response = await axios.get(`${API_URL_BASE}/posts/${postId}`);
         setPost(response.data);
       } catch (err) {
         console.error("Error fetching post:", err);
-        setError("Failed to fetch post details.");
-        setPost(null); // Ensure post is null on error
+        let errorMessage = "Failed to fetch post details.";
+        if (err.response && err.response.data && err.response.data.message) {
+            errorMessage = err.response.data.message;
+        }
+        setError(errorMessage);
+        setPost(null);
       } finally {
         setLoadingPost(false);
       }
     };
 
     fetchPost();
-    fetchComments(); // Fetch comments after post or concurrently
-  }, [postId, fetchComments]);
+    fetchCommentsCallback();
+  }, [postId, fetchCommentsCallback]);
 
   const handlePostUpdated = (updatedPostData) => {
     setPost(updatedPostData);
@@ -56,7 +64,6 @@ const PostDetailPage = () => {
 
   const handleCommentAdded = (newComment) => {
     setComments(prevComments => [newComment, ...prevComments]);
-    // Optionally, update the comment count on the main 'post' object if it's part of its DTO
     if (post) {
         setPost(prevPost => ({
             ...prevPost,
@@ -65,24 +72,24 @@ const PostDetailPage = () => {
     }
   };
 
-  if (loadingPost) return <p>Loading post details...</p>;
-  if (error && !post) return <p className="text-red-500">Error: {error}</p>; // Show error only if post truly failed to load
-  if (!post) return <p>Post not found or failed to load.</p>;
+  if (loadingPost) return <p className="text-center text-slate-500 py-10">Loading post details...</p>;
+  if (error && !post) return <p className="text-center text-red-500 py-10">Error: {error}</p>;
+  if (!post) return <p className="text-center text-slate-500 py-10">Post not found.</p>;
 
   return (
-    <div>
-      <Link to="/" className="text-indigo-600 hover:text-indigo-800 mb-4 inline-block">&larr; Back to all posts</Link>
+    <div className="max-w-2xl mx-auto">
+      <div className="mb-6">
+        <Link to="/" className="text-sky-600 hover:text-sky-700 hover:underline transition-colors duration-150">
+          &larr; Back to all posts
+        </Link>
+      </div>
       <PostCard post={post} onPostUpdated={handlePostUpdated} />
 
-      <div className="mt-8 bg-white shadow-lg rounded-lg p-6">
-        <h3 className="text-xl font-semibold mb-4 text-gray-700">Comments</h3>
-        {loadingComments ? (
-          <p>Loading comments...</p>
-        ) : (
-          <CommentList comments={comments} />
-        )}
-        {/* Display comment fetching error separately if needed */}
-        {error && comments.length === 0 && !loadingComments && <p className="text-red-500">Could not load comments.</p>}
+      <div className="mt-8 bg-white shadow-sm rounded-lg p-5 sm:p-6 border border-slate-200">
+        <h3 className="text-xl font-medium mb-5 text-slate-700">Comments</h3>
+        {loadingComments && <p className="text-slate-500">Loading comments...</p>}
+        {!loadingComments && <CommentList comments={comments} />}
+        {error && comments.length === 0 && !loadingComments && !loadingPost && <p className="text-red-500 text-sm mt-2">Could not load comments.</p>}
         <AddCommentForm postId={post.id} onCommentAdded={handleCommentAdded} />
       </div>
     </div>
