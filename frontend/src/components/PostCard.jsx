@@ -17,7 +17,6 @@ const PostCard = ({ post, onPostUpdated }) => {
       }
     } catch (error) {
       console.error("Error upvoting post:", error);
-      // You might want to set an error state here to display to the user
     }
   };
 

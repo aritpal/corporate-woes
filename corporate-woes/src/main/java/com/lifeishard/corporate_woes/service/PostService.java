@@ -8,6 +8,7 @@ import com.lifeishard.corporate_woes.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,23 +30,20 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public List<PostResponseDTO> getAllPosts() {
-        return postRepository.findAllByOrderByCreatedAtDesc().stream()
-                .map(this::mapToPostResponseDTO)
-                .collect(Collectors.toList());
+        return postRepository.findAllByOrderByCreatedAtDesc().stream().map(this::mapToPostResponseDTO).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public PostResponseDTO getPostById(Long id) {
-        Post post = postRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+        Post post = postRepository.findById(id).orElseThrow(() -> new RuntimeException("Post not found"));
         return mapToPostResponseDTO(post);
     }
 
     @Transactional
-    public PostResponseDTO upvotePost(Long id) { //
-        Post post = postRepository.findById(id).orElseThrow(() -> new RuntimeException("Post not found")); //
-        post.setUpvotes(post.getUpvotes() + 1); //
-        return mapToPostResponseDTO(postRepository.save(post)); //
+    public PostResponseDTO upvotePost(Long id) {
+        Post post = postRepository.findById(id).orElseThrow(() -> new RuntimeException("Post not found"));
+        post.setUpvotes(post.getUpvotes() + 1);
+        return mapToPostResponseDTO(postRepository.save(post));
     }
 
     private PostResponseDTO mapToPostResponseDTO(Post post) {
@@ -54,9 +52,7 @@ public class PostService {
         dto.setContent(post.getContent());
         dto.setCreatedAt(post.getCreatedAt());
         dto.setUpvotes(post.getUpvotes());
-        dto.setCommentCount(commentRepository != null ?
-                commentRepository.countByPostId(post.getId()) :
-                post.getComments().size());
+        dto.setCommentCount(commentRepository.countByPostId(post.getId())); //
         return dto;
     }
 }

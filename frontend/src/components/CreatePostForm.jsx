@@ -1,32 +1,32 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/api/v1/posts'; //
+const API_URL = 'http://localhost:8080/api/v1/posts';
 
-const CreatePostForm = ({ onPostCreated }) => { //
-  const [content, setContent] = useState(''); //
+const CreatePostForm = ({ onPostCreated }) => {
+  const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
-  const handleSubmit = async (e) => { //
-    e.preventDefault(); //
-    if (!content.trim()) { //
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!content.trim()) {
       setError("Content cannot be empty.");
       return;
     }
 
-    setIsSubmitting(true); //
+    setIsSubmitting(true);
     setError(null);
 
     try {
-      const response = await axios.post(API_URL, { content }); //
-      onPostCreated(response.data); //
-      setContent(''); //
-    } catch (err) { //
+      const response = await axios.post(API_URL, { content });
+      onPostCreated(response.data);
+      setContent('');
+    } catch (err) {
       console.error("Error creating post:", err);
       setError(err.response?.data?.message || "Failed to create post. Please try again.");
     } finally {
-      setIsSubmitting(false); //
+      setIsSubmitting(false);
     }
   };
 
@@ -37,8 +37,8 @@ const CreatePostForm = ({ onPostCreated }) => { //
       <textarea
         className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
         rows="4"
-        value={content} //
-        onChange={e => setContent(e.target.value)} //
+        value={content}
+        onChange={e => setContent(e.target.value)}
         placeholder="What's grinding your gears today?"
         disabled={isSubmitting}
       />
@@ -53,4 +53,4 @@ const CreatePostForm = ({ onPostCreated }) => { //
   );
 };
 
-export default CreatePostForm; //
+export default CreatePostForm;
