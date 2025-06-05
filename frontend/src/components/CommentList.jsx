@@ -2,7 +2,7 @@ import React from 'react';
 
 const CommentList = ({ comments }) => {
   if (!comments || comments.length === 0) {
-    return <p>No comments yet.</p>;
+    return <p className="text-gray-600">No comments yet.</p>;
   }
 
   return (

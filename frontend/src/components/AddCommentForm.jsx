@@ -19,9 +19,11 @@ const AddCommentForm = ({ postId, onCommentAdded }) => {
     setError(null);
 
     try {
-      const response = await axios.post(`<span class="math-inline">\{API\_URL\_BASE\}/posts/</span>{postId}/comments`, { content }); //
-      onCommentAdded(response.data); //
-      setContent(''); //
+      const response = await axios.post(`${API_URL_BASE}/posts/${postId}/comments`, { content });
+      if (onCommentAdded) {
+        onCommentAdded(response.data);
+      }
+      setContent('');
     } catch (err) {
       console.error("Error adding comment:", err);
       setError(err.response?.data?.message || "Failed to add comment. Please try again.");

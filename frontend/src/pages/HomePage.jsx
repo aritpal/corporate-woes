@@ -16,8 +16,8 @@ const HomePage = () => {
         setPosts(response.data);
         setLoading(false);
       })
-      .catch(error => {
-        console.error("Error fetching posts:", error);
+      .catch(err => {
+        console.error("Error fetching posts:", err);
         setError("Failed to fetch posts. Please try again later.");
         setLoading(false);
       });
@@ -28,24 +28,20 @@ const HomePage = () => {
   };
 
   const handlePostUpdated = (updatedPost) => {
-    console.log('HomePage: handlePostUpdated called with:', updatedPost);
-    setPosts(prevPosts => {
-      console.log('HomePage: Previous posts state:', prevPosts);
-      const newPosts = prevPosts.map(p =>
+    setPosts(prevPosts =>
+      prevPosts.map(p =>
         p.id === updatedPost.id ? updatedPost : p
-      );
-      console.log('HomePage: New posts state after map:', newPosts);
-      return newPosts;
-    });
+      )
+    );
   };
 
   if (loading) return <p>Loading...</p>;
-  if (error && posts.length === 0) return <p>Error: {error}</p>;
+  if (error && posts.length === 0) return <p className="text-red-500">Error: {error}</p>;
 
   return (
     <div>
       <CreatePostForm onPostCreated={handlePostCreated} />
-      {error && <p className="text-red-500 text-sm mb-3">Error fetching new posts, but showing cached ones: {error}</p>}
+      {error && <p className="text-red-500 text-sm my-2">Error fetching posts: {error}. Displaying cached posts if available.</p>}
       <PostList posts={posts} onPostUpdated={handlePostUpdated} />
     </div>
   );

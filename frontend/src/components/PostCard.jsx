@@ -6,18 +6,14 @@ const API_URL_BASE = 'http://localhost:8080/api/v1';
 
 const PostCard = ({ post, onPostUpdated }) => {
   const handleUpvote = async () => {
-    console.log('PostCard: handleUpvote called for post ID:', post.id, 'Post object:', post);
-    const apiUrl = `<span class="math-inline">\{API\_URL\_BASE\}/posts/</span>{post.id}/upvote`;
-    console.log('PostCard: Attempting to call API URL:', apiUrl);
     try {
-      const response = await axios.post(apiUrl);
-      console.log('PostCard: Upvote API Response Data:', response.data);
+      const response = await axios.post(`${API_URL_BASE}/posts/${post.id}/upvote`);
       if (onPostUpdated) {
-        console.log('PostCard: Calling onPostUpdated with:', response.data);
         onPostUpdated(response.data);
       }
     } catch (error) {
-      console.error("Error upvoting post:", error);
+      console.error("Error upvoting post:", post.id, error);
+      // Consider displaying an error message to the user
     }
   };
 
