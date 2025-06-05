@@ -1,12 +1,13 @@
 import React from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 const API_URL_BASE = 'http://localhost:8080/api/v1';
 
 const PostCard = ({ post, onPostUpdated }) => {
   const handleUpvote = async () => {
     console.log('PostCard: handleUpvote called for post ID:', post.id, 'Post object:', post);
-    const apiUrl = `${API_URL_BASE}/posts/${post.id}/upvote`;
+    const apiUrl = `<span class="math-inline">\{API\_URL\_BASE\}/posts/</span>{post.id}/upvote`;
     console.log('PostCard: Attempting to call API URL:', apiUrl);
     try {
       const response = await axios.post(apiUrl);
@@ -33,7 +34,9 @@ const PostCard = ({ post, onPostUpdated }) => {
           </button>
           <span>Upvotes: {post.upvotes}</span>
         </div>
-        <span>Comments: {post.commentCount || 0}</span>
+        <Link to={`/post/${post.id}`} className="hover:underline">
+          <span>Comments: {post.commentCount || 0}</span>
+        </Link>
         <span>{new Date(post.createdAt).toLocaleString()}</span>
       </div>
     </div>
